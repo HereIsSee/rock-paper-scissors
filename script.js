@@ -1,88 +1,91 @@
-function getComputerChoice (){
-    let randomNumber = Math.floor(Math.random()*3)+1;
-    let choice = "";
-    switch (randomNumber){
-        case 1:
-            choice = "Rock";
-            break;
-        case 2:
-            choice = "Paper";
-            break;
-        case 3:
-            choice = "Scissors";
-            break;
-        default:
-            choice = "Rock";
-    }
-    return choice;
-}
-function getHumanChoice (){
-    let choice = prompt('Choose "Rock", "Paper" or "Scissors"');
-    if (choice !== "Rock" && choice !== "Paper" && choice !=="Scissors")
-    {
-        return "Wrong value";
-    }
-    return choice
-}
-function PlayRound(human, robot){
-    let result = "none";
-    if(human === robot){
-        result = "tie";
-    }
-    else if(human === "Rock" && robot === "Scissors"){
-        result = "win";
-    }
-    else if(human === "Rock" && robot === "Paper"){
-        result = "lose";
-    }
-    else if(human === "Paper" && robot === "Scissors"){
-        result = "lose";
-    }
-    else if(human === "Paper" && robot === "Rock"){
-        result = "win";
-    }
-    else if(human === "Scissors" && robot === "Rock"){
-        result = "lose";
-    }
-    else if(human === "Scissors" && robot === "Paper"){
-        result = "win";
-    }
-    return result;
+const Rock = document.querySelector("#Rock");
+const Paper = document.querySelector("#Paper");
+const Scissors = document.querySelector("#Scissors");
 
-}
-while (true){
-    let counterForHuman = 0;
-    let counterForRobot = 0;
-    let numberOfRounds = prompt ("How many rounds do you want to play for?:");
-    for (let i = 0; i < numberOfRounds; i++){
-        let human = getHumanChoice();
-        let robot = "Rock";//getComputerChoice();
-        let result = PlayRound(human,robot);
-        if(result === "win"){
-            console.log("You won!");
-            counterForHuman+=1;
-        } 
-        else if(result === "lose"){
-            console.log("You lost!");
-            counterForRobot+=1;
-        } else if (result === "tie"){
-            console.log("It's a tie!");
-        }
-        else{
-            console.log("Wrong input!");
-            i-=1;
-        }
-        console.log("Score: " + counterForHuman + " " + counterForRobot);
-    }
-    if(counterForHuman > counterForRobot)
-        console.log("YOU WON!!!");
-    else if (counterForHuman < counterForHuman)
-        console.log("YOU LOST!!!");
-    else
-        console.log("IT'S A TIE!!!");
+let counterForHuman = 0;
+let counterForRobot = 0;
+let numberOfRounds = 0;
 
-    if(prompt("Do you wish to continue? ('yes' or 'no') ") === "no"){
-        break;
-    }
-
+function getComputerChoice() {
+  const choices = ["Rock", "Paper", "Scissors"];
+  return choices[Math.floor(Math.random() * choices.length)];
 }
+
+function PlayRound(human, robot) {
+  let result = "none";
+  if (human === robot) {
+    result = "tie";
+  } else if (human === "Rock" && robot === "Scissors") {
+    result = "win";
+  } else if (human === "Rock" && robot === "Paper") {
+    result = "lose";
+  } else if (human === "Paper" && robot === "Scissors") {
+    result = "lose";
+  } else if (human === "Paper" && robot === "Rock") {
+    result = "win";
+  } else if (human === "Scissors" && robot === "Rock") {
+    result = "lose";
+  } else if (human === "Scissors" && robot === "Paper") {
+    result = "win";
+  }
+  return result;
+}
+
+function displayResult(result) {
+  const resultElement = document.getElementById('result');
+  resultElement.textContent = `Result: ${result}`;
+}
+function addResult(winner){
+    const ResultBoar = document.querySelector("#result");
+    const newWin = document.createElement("div");
+    const newScore = document.createElement("div");    
+    if(winner === "win"){
+        newWin.textContent = "You won!";
+        ResultBoar.appendChild(newWin);
+        counterForHuman+=1;
+    } 
+    else if(winner === "lose"){
+        newWin.textContent = "You lost!";
+        ResultBoar.appendChild(newWin);
+        counterForRobot+=1;
+    } else if (winner === "tie"){
+        newWin.textContent = "It's a tie!";
+        ResultBoar.appendChild(newWin);
+        
+    }
+    else{
+        //console.log("Wrong input!");
+        //i-=1;
+    }
+    newScore.textContent = "Score: " + counterForHuman + " " + counterForRobot;
+    ResultBoar.appendChild(newScore);
+    
+}
+// function addResult(result) {
+//   if (result === "win") {
+//     counterForHuman++;
+//   } else if (result === "lose") {
+//     counterForRobot++;
+//   }
+//   displayResult(`Human: ${counterForHuman}, Robot: ${counterForRobot}`);
+// }
+
+function waitForButtonClick() {
+  return new Promise((resolve) => {
+    Rock.addEventListener("click", () => resolve("Rock"), { once: true });
+    Paper.addEventListener("click", () => resolve("Paper"), { once: true });
+    Scissors.addEventListener("click", () => resolve("Scissors"), { once: true });
+  });
+}
+
+async function playGame() {
+  for (let i = 0; i < 5; i++) {
+    const humanChoice = await waitForButtonClick();
+    const computerChoice = getComputerChoice();
+    const result = PlayRound(humanChoice, computerChoice);
+    addResult(result);
+  }
+  displayResult(`Game Over! Final Score - Human: ${counterForHuman}, Robot: ${counterForRobot}`);
+}
+
+playGame();
